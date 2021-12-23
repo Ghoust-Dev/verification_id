@@ -1,5 +1,6 @@
 <template>
-    <div class="container">
+    <div class="container py-4">
+        <!-- <canvas id="target" width="800px" height="400px" style="margin: auto" ref="canvaMask"></canvas> -->
          <div v-if="!idtypeSelected" class="content justify-content-center text-center">
             <h2 class="py-5">Choose type ID</h2>
             <div class="row justify-content-center d-flex">
@@ -31,11 +32,12 @@
                     <div v-if="showModal" @close="showModal = false"> </div>
                     <div id="video_box">
                         <div id="video_overlays" class="imgMask">            
-                            <img :src="'/assets/cadre-id.png'"  >
+                            <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"   ref="mask">
+                            <img else :src="'/assets/cadre-id.png'"   ref="mask">
                         </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
                     </div>    
-                    <div class="row">
+                    <div class="row mt-2">
                         <div class="contentBtn justify-content-center">            
                             <button id="myBtn" @click="saveID">Capture</button> 
                         </div>
@@ -85,6 +87,7 @@
         props: ['facingmode'],
         data(){
             return{
+            portrait:false,
             video: null,
             prediction: '',
             ctx: null,
@@ -102,9 +105,20 @@
             }
         },
         mounted(){
-            // this.setupPage()
+            window.addEventListener(
+                "orientationchange",
+                this.handleOrientationChange
+            );
         },
         methods:{
+            handleOrientationChange() {
+                const orientation = window.screen.orientation.type
+                if (orientation === "portrait-primary") {
+                    portrait = true;
+                } else if (orientation === "landscape-primary") {
+                    portrait = false;
+                }
+            },
             selectTypeVerification(value){
                 if(value == 1){
                     this.setupPage();
@@ -180,7 +194,7 @@
                 // vm.ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
                 // vm.videoHeight = window.innerHeight;
                 // vm.videoMarginLeftAdjust =   ( window.innerWidth - this.videoWidth) / 2;
-                vm.model = await blazeface.load();
+                // vm.model = await blazeface.load();
                 
                 // vm.renderPrediction();
             },
@@ -209,6 +223,42 @@
 
                 const context = vm.$refs.output.getContext('2d');                                 
                 context.drawImage(vm.$refs.video, 0, 0);
+
+                // var canvas = document.createElement("canvas");
+                // var ctxMask = canvas.getContext('2d');
+                // var targetCtx = target.getContext('2d');
+
+                // var l = (vm.$refs.output.width / 2) - (vm.$refs.mask.width / 10), t = (vm.$refs.output.height / 7) - (vm.$refs.mask.height / 25);        
+                
+                // ctxMask.drawImage(vm.$refs.mask, l, t);
+                // ctxMask.globalCompositeOperation = "source-in";
+                // ctxMask.drawImage(vm.$refs.output, 0, 0);
+                        
+                // var imageData = ctxMask.getImageData(l, t, vm.$refs.mask.width, vm.$refs.mask.height);                                       
+                // targetCtx.putImageData(imageData, 50, 50);     
+                // const canv = document.getElementById("target").toDataURL("image/jpeg");
+                // canv.replace('data:image/jpeg;base64,', '');
+                
+
+                // let blobToFile = vm.dataURItoBlob(canv);
+                    
+                //     const cfile = new File([blobToFile], "recard-"+this.$store.state.idVerification + ".jpg",
+                //             {type: "image/jpeg", lastModified: Date.now()});
+                    
+                //     formData.append('photo', cfile);
+                //     formData.append('idverification', this.$store.state.idVerification);
+    
+                //     vm.$auth.post('/api/uploadPhoto', formData, {
+                //             headers: {
+                //                 'Content-Type': 'multipart/form-data',
+                //                 }
+                //         }).then(result => {     
+                //             console.log(this.$store.state.idVerification); 
+                //             console.log(blobToFile);     
+                //         }).catch(err => {
+                            
+                //     });
+
                 if(!vm.isBack){
                     const canvas = document.getElementById("canvasVideoFront").toDataURL("image/jpeg");
                     canvas.replace('data:image/jpeg;base64,', '');
@@ -299,6 +349,72 @@
 
 <style scoped>
 
+@media screen and (orientation:landscape) {
+    .content {
+        height: 800px;
+    }
+}
+
+@media screen and (orientation:portrait) {
+    .content {
+        height: 90vh;
+    }
+
+    #myVideo {
+        width: 100%;
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+
+    }
+
+    @media (max-width: 560px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    @media (max-width: 370px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+
+
+
+
 #video_box{
     position:relative;
     -webkit-box-align:center;
@@ -306,6 +422,7 @@
     box-align:center;
     box-pack:center;
     display:-webkit-box;
+    overflow: hidden;
 }
 
 #video_box_back{
@@ -430,7 +547,6 @@ h1 {
 
 .content {
     background-color: #fff;
-    height: 800px;
     width: 96%;
     margin-top: 2em;
     border-radius: 0.5em;
