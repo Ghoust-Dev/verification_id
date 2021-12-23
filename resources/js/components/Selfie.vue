@@ -85,10 +85,11 @@ export default {
             canvas.replace('data:image/jpeg;base64,', '');
             let blobToFile = vm.dataURItoBlob(canvas);
             
-            const cfile = new File([blobToFile], "selfie"+this.$store.state.idVerification + ".jpg",
+            const cfile = new File([blobToFile], "selfie-"+this.$store.state.idVerification + ".jpg",
                     {type: "image/jpeg", lastModified: Date.now()});
             
             formData.append('photo', cfile);
+            formData.append('idverification', this.$store.state.idVerification);
 
             vm.$auth.post('/api/uploadPhoto', formData, {
                     headers: {

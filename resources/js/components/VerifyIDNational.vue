@@ -22,74 +22,57 @@
             </div>
         </div>
         <div v-if="idtypeSelected && identityCard">
-            <div v-if="!isBack" class="content text-center d-grid align-content-between">
+            <div class="content text-center d-grid align-content-center">
                 <div class="row">
-                    <h2 class="py-3">FRONT ID</h2>
+                    <h2 v-if="!isBack"  class="py-2">FRONT ID</h2>
+                    <h2 v-else class="py-2">Back ID</h2>
                 </div>                
-                <div class="justify-content-center  d-flex">
+                <div  class="">
                     <div v-if="showModal" @close="showModal = false"> </div>
-                    <div class="contentVideo">
+                    <div id="video_box">
+                        <div id="video_overlays" class="imgMask">            
+                            <img :src="'/assets/cadre-id.png'"  >
+                        </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
                     </div>    
-                    
-                    <div class="contentVideo outputVideo justify-content-center d-flex">            
-                        <canvas id="canvasVideoFront" ref="output"></canvas>
-                    </div>
-                    <div class="contentVideo outputVideo justify-content-center d-flex">            
-                        <img :src="'/assets/cadre-id.png'" class="imgMask" >
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="contentBtn justify-content-center">            
-                        <button id="myBtn" @click="saveID">Capture</button> 
-                    </div>
-                </div>                
-            </div>
-            <div v-else class="content text-center d-grid align-content-between">
-                <div class="row">
-                    <h2 class="py-3">Back ID</h2>
-                </div> 
-                <div class="justify-content-center  d-flex">
-                    <div v-if="showModal" @close="showModal = false"> </div>
-                    <div class="contentVideo">
-                        <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
+                    <div class="row">
+                        <div class="contentBtn justify-content-center">            
+                            <button id="myBtn" @click="saveID">Capture</button> 
+                        </div>
                     </div>    
                     
-                    <div class="contentVideo outputVideo justify-content-center d-flex">            
-                        <canvas id="canvasVideoBack" ref="output"></canvas>
-                    </div>
-                    <div class="contentVideo outputVideo justify-content-center d-flex">            
-                        <img :src="'/assets/cadre-id.png'" class="imgMask" >
-                    </div>
+                    <div class="outputVideo" hidden>            
+                        <canvas v-if="!isBack" id="canvasVideoFront" ref="output"></canvas>
+                        <canvas v-else id="canvasVideoBack" ref="output"></canvas>
+                    </div>            
+                    
                 </div>
-                <div class="row">
-                    <div class="contentBtn justify-content-center">            
-                        <button id="myBtn" @click="saveID">Capture</button> 
-                    </div>
-                </div>   
             </div>
         </div>
         <div v-if="idtypeSelected && passport">
-            <div class="content d-grid align-content-between text-center">
+            <div class="content text-center d-grid align-content-center">
                 <div class="row">
-                    <h2 class="py-3">Passport</h2>
-                </div>                 
-                <div class="justify-content-center  d-flex">
+                    <h2 class="py-2">Passport</h2>
+                </div>                
+                <div  class="">
                     <div v-if="showModal" @close="showModal = false"> </div>
-                    <div class="contentVideo">
+                    <div id="video_box">
+                        <div id="video_overlays" class="imgMask">            
+                            <img :src="'/assets/cadre-id.png'"  >
+                        </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
-                    </div>   
+                    </div>    
+                    <div class="row">
+                        <div class="contentBtn justify-content-center">            
+                            <button id="myBtn" @click="savePassport">Capture</button> 
+                        </div>
+                    </div>    
                     
-                    <div class="contentVideo outputVideo justify-content-center d-flex">            
+                    <div class="outputVideo" hidden>            
                         <canvas id="canvasVideoFront" ref="output"></canvas>
-                    </div>
-                    x
+                    </div>            
+                    
                 </div>
-                <div class="row">
-                    <div class="contentBtn justify-content-center">            
-                        <button id="myBtn" @click="savePassport">Capture</button> 
-                    </div>
-                </div>   
             </div>
         </div>
     </div>
@@ -190,13 +173,13 @@
                 this.videoWidth = vm.video.videoWidth;
                 this.videoHeight = vm.video.videoHeight;
                 
-                vm.canvas = vm.$refs.output;
-                vm.canvas.width = this.videoWidth;
-                vm.canvas.height = this.videoHeight;
-                vm.ctx = vm.canvas.getContext('2d');
-                vm.ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-                vm.videoHeight = window.innerHeight;
-                vm.videoMarginLeftAdjust =   ( window.innerWidth - this.videoWidth) / 2;
+                // vm.canvas = vm.$refs.output;
+                // vm.canvas.width = this.videoWidth;
+                // vm.canvas.height = this.videoHeight;
+                // vm.ctx = vm.canvas.getContext('2d');
+                // vm.ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
+                // vm.videoHeight = window.innerHeight;
+                // vm.videoMarginLeftAdjust =   ( window.innerWidth - this.videoWidth) / 2;
                 vm.model = await blazeface.load();
                 
                 // vm.renderPrediction();
@@ -316,21 +299,27 @@
 
 <style scoped>
 
+#video_box{
+    position:relative;
+    -webkit-box-align:center;
+    -webkit-box-pack:center;
+    box-align:center;
+    box-pack:center;
+    display:-webkit-box;
+}
+
+#video_box_back{
+    position:relative;
+    -webkit-box-align:center;
+    -webkit-box-pack:center;
+    box-align:center;
+    box-pack:center;
+    display:-webkit-box;
+}
+
 .content-card {
     cursor: pointer;
 }
-
-.card-body{
-    padding: 0 !important;
-}
-
-.card-footer {
-   background-color: lightskyblue !important;
-    color: white !important;
-    height: 4em !important;
-    display: flex !important;
-    justify-content: center !important;
-    }
 
 .text-muted {
     color: #303437 !important;
@@ -339,17 +328,40 @@
     display: grid;
 }
 
-#myVideo {
-    width: 700px;
-    height: 600px;  
+#video_overlays {
+    position: absolute;
+    width: 100%;
+    height: 98.8%;
+    z-index: 300000;
+    text-align: center;
+    top: 0%;
 }
 
-#canvasVideo {
-    width: 700px;
-    height: 600px;  
+#video_overlays_back {
+    position: absolute;
+    width: 100%;
+    height: 98.8%;
+    z-index: 300000;
+    text-align: center;
+    top: 0%;
+}
+
+.card-footer {
+   background-color: lightskyblue !important;
+    color: white !important;
+    height: 4em !important;
+    display: flex !important;
+    justify-content: center !important;
 }
 
 .inputVideo{
+     -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    width: auto;
+    height: auto;
+}
+
+.video_back{
      -webkit-transform: scaleX(-1);
     transform: scaleX(-1);
     width: auto;
@@ -364,20 +376,22 @@
   padding: 20px;  
 }
 
-.imgMask {
-    width: 700px;
-    height: 525px;
-    margin-top: 38px;
+.imgMask img {    
+    max-width: 100%;
+    max-height: 100%;
 }
-/* Add some content at the bottom of the video/page */
+
+.imgMask_back img {    
+    max-width: 100%;
+    max-height: 100%;
+}
+
 .contentBtn {
     color: #f1f1f1;
     width: 100%;  
     height: 3.2em;
-    margin-bottom: 1em;
 }
 
-/* Style the button used to pause/play the video */
 #myBtn {
   width: 200px;
   font-size: 18px;
@@ -388,10 +402,7 @@
   cursor: pointer;
 }
 
-#myBtn:hover {
-  background: #ddd;
-  color: black;
-}
+
 h2 {
   font-family: 'Open Sans', sans-serif;
   font-weight: 800;
@@ -417,12 +428,6 @@ h1 {
   color: #2FC877;
 }
 
-#idVerification {
-    width: 25%;
-    display: inline-flex;
-    margin: 1.5rem;
-}
-
 .content {
     background-color: #fff;
     height: 800px;
@@ -431,20 +436,7 @@ h1 {
     border-radius: 0.5em;
 }
 
-.subBtn {
-    background-color: #2FC877;
-    border-color: #2FC877;
-    border-radius: 5rem;
-    width: 7em;
-}
-
-
-
 @media (max-width: 995px) and (min-width: 769px) {
-    .card-footer {
-        height: 3em !important;
-    }
-
     .content-card img {
        width: 100%;
     }
@@ -453,11 +445,12 @@ h1 {
         margin-top: 4em;
     }
 
-    .imgMask {
-        width: 640px;
-        height: 480px;
-        margin-top: 0px;
-    }
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 99%;
+        z-index: 300000;
+    }    
 
     .contentVideo {
         left: auto;
@@ -476,10 +469,6 @@ h1 {
 }
 
 @media (max-width: 768px) {
-    .card-footer {
-        height: 3em !important;
-    }
-
     .content-card img {
        width: 100%;
     }
@@ -489,11 +478,12 @@ h1 {
         height: 740px;
     }
 
-    .imgMask {
-        width: 490px;
-        height: 368px;
-        margin-top: 0px;
-    }
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 98%;
+        z-index: 300000;
+    }    
 
     #myVideo {
         width: 490px;
@@ -525,16 +515,19 @@ h1 {
         margin-top: 6em;
     }
 
-    .imgMask {
-       width: 410px;
-    height: 309px;
-    margin-top: 15px;
+    #myVideo {
+        width: 100%;
+        height: 100%;
     }
 
-    #myVideo {
-        width: 410px;
-        height: 340px;
+    #video_overlays {
+        position:absolute;
+        width: 100%;
+        height: 100%;
+        z-index:300000;
+        text-align:center;
     }
+    
 
     #canvasVideoFront {
         width: 410px;
@@ -557,16 +550,17 @@ h1 {
         margin-top: 6em;
     }
 
-    .imgMask {
-        width: 310px;
-        height: 232px;
-        margin-top: 54px;
+    #myVideo {
+        width: 100%;
+        height: 100%;
     }
 
-    #myVideo {
-        width: 310px;
-        height: 340px;
-    }
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 300000;
+    }    
 
     #canvasVideoFront {
         width: 310px;
@@ -597,15 +591,16 @@ h1 {
         top: 110px;
     }
 
-    .imgMask {
-        width: 230px;
-        height: 174px;
-        margin-top: 83px;
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 300000;
     }
 
     #myVideo {
-        width: 230px;
-        height: 340px;
+        width: 100%;
+        height: 100%;
     }
 
     #canvasVideoFront {
