@@ -69,23 +69,17 @@ class SaveDataUser extends Controller
      */
     public function uploadVideo(Request $request)
     {
-        $path = storage_path('../storage/app/public/'.$request->idverification);
+        $path = "public/".$request->idverification;
         
         if(!File::isDirectory($path)){
             File::makeDirectory($path, 0777, true, true);
         }    
 
-        $file = tap($request->file('video'))->store('videos');
-        
-        FFMpeg::fromDisk("local")->open("videos/". $file->hashName())
-                    ->export()
-                    ->toDisk('local')
-                    ->inFormat(new \FFMpeg\Format\Video\X264('libmp3lame', 'libx264'))
-                    ->save('public/'.$request->idverification.'/video-'.$request->idverification.'-'.$request->retake.'.mp4');
-        
-
+        tap($request->file('video'))->storeAs($path, "video-".$request->idverification."-".$request->retake.".mkv");
         return response()->json('Has been saved', 200);
     }
+
+    
 
     /**
      * Store a newly created resource in storage.

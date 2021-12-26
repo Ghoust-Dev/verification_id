@@ -1,29 +1,33 @@
 <template>
     <div class="container">
-        <div class="content d-grid align-content-between text-center">
-            <div class="row  justify-content-center d-flex">
-                <h2 class="mb-5">Take Selfie</h2>
+        <div class="content d-grid align-content-center text-center">
+            <div class="row">
+                <h2 class="mb-5">Take Selfie with ID</h2>
             </div>            
-                <div class="contentVideo">
+                <div id="video_box">
+                    <div id="video_overlays" class="imgMask">            
+                        <img v-if="portrait" :src="'/assets/selfie-id-portrait.png'"   ref="mask">
+                        <img else :src="'/assets/selfie-id.png'"   ref="mask">
+                    </div>
                     <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
-                </div>   
+                </div> 
+                <div class="row mt-2">
+                    <div class="contentBtn  justify-content-center">
+                        <b-button class="subBtn mt-5" type="button" @click="takeSelfie" variant="success">Take</b-button>
+                    </div>
+                </div> 
                 <div class="contentVideo justify-content-center d-flex" hidden>            
                     <canvas id="photoTaken" ref="canvas" hidden></canvas>
                 </div>
-                <img :src="imgSrc" v-if="imgSrc" />
-            <div class="row  justify-content-center d-flex">
-                <div class="contentBtn">
-                    <b-button class="subBtn mt-5" type="button" @click="takeSelfie" variant="success">Take</b-button>
-                </div>
-            </div>
+                <img :src="imgSrc" v-if="imgSrc" />            
         </div>
     </div>
 </template>
 
 <script>
 export default {    
-  name: 'VerifyID',
-  data() {
+    name: 'VerifyID',
+    data() {
       return {
         video: null,
         prediction: '',
@@ -36,13 +40,39 @@ export default {
         videoWidth: null,
         capture: false,
         imgSrc: null,
+        portrait:false,
       }
-  },
-    mounted(){
-        this.setupPage();
-        console.log(this.$store.state.idVerification);
     },
-  methods:{
+    mounted(){
+        window.addEventListener(
+            "orientationchange",
+            this.handleOrientationChange
+        );
+    
+        const orientation = window.screen.orientation.type
+        console.log('portrait screen '+window.screen.orientation.type);
+        if (orientation === "portrait-primary") {
+            this.portrait = true;
+            console.log('portrait screen '+this.portrait);
+        } else if (orientation === "landscape-primary") {
+            this.portrait = false;
+            console.log('landscape screen '+this.portrait);
+        }
+
+        this.setupPage();
+    },
+    methods:{
+        handleOrientationChange() {
+            const orientation = window.screen.orientation.type
+                console.log('portrait screen '+orientation);
+            if (orientation === "portrait-primary") {
+                this.portrait = true;
+                console.log('portrait screen '+this.portrait);
+            } else if (orientation === "landscape-primary") {
+                this.portrait = false;
+                console.log('landscape screen '+this.portrait);
+            }
+        },
         async setupPage() {
             var vm = this ;
             const state = {
@@ -61,7 +91,7 @@ export default {
             
             const stream = await navigator.mediaDevices.getUserMedia({
             'audio': false,
-            'video': { facingMode: vm.facingmode },
+            'video': { facingMode: vm.facingMode },
             });
             vm.video.srcObject = stream;
             
@@ -119,7 +149,98 @@ export default {
 </script>
 
 <style scoped>
+@media screen and (orientation:landscape) {
+    .content {
+        height: 800px;
+    }
+}
 
+@media screen and (orientation:portrait) {
+    .content {
+        height: 90vh;
+    }
+
+    #myVideo {
+        width: 100%;
+        height: 100%;
+    }
+
+    @media (max-width: 768px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+
+    }
+
+    @media (max-width: 560px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    @media (max-width: 370px) {
+        .content {
+            height: 90vh;
+        }
+
+        #myVideo {
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+
+.inputVideo{
+     -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    width: auto;
+    height: auto;
+}
+
+#video_box{
+    position:relative;
+    -webkit-box-align:center;
+    -webkit-box-pack:center;
+    box-align:center;
+    box-pack:center;
+    display:-webkit-box;
+    overflow: hidden;
+}
+
+.imgMask img {    
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#video_overlays {
+    position: absolute;
+    width: 100%;
+    height: 98.8%;
+    z-index: 300000;
+    text-align: center;
+    top: 0%;
+}
 
 h2 {
   font-family: 'Open Sans', sans-serif;
@@ -164,46 +285,6 @@ h1 {
 }
 
 
-.content-card {
-    cursor: pointer;
-}
-
-.card-body{
-    padding: 0 !important;
-}
-
-.card-footer {
-   background-color: lightskyblue !important;
-    color: white !important;
-    height: 4em !important;
-    display: flex !important;
-    justify-content: center !important;
-    }
-
-.text-muted {
-    color: #303437 !important;
-    font-weight: 800;
-    align-content: center;
-    display: grid;
-}
-
-#myVideo {
-    width: 700px;
-    height: 600px;  
-}
-
-#canvasVideo {
-    width: 700px;
-    height: 600px;  
-}
-
-.inputVideo{
-     -webkit-transform: scaleX(-1);
-    transform: scaleX(-1);
-    width: auto;
-    height: auto;
-}
-
 .contentVideo {
   position: fixed;
   top: 130px;
@@ -212,15 +293,24 @@ h1 {
   padding: 20px;  
 }
 
-.imgMask {
-    width: 700px;
-    height: 525px;
-    margin-top: 38px;
+.content-card {
+    cursor: pointer;
 }
+
+
+.text-muted {
+    color: #303437 !important;
+    font-weight: 800;
+    align-content: center;
+    display: grid;
+}
+
 /* Add some content at the bottom of the video/page */
-.contentBtn {
-    color: #f1f1f1;
-    margin-bottom: 2em;
+.content {
+    background-color: #fff;
+    width: 96%;
+    margin-top: 2em;
+    border-radius: 0.5em;
 }
 
 /* Style the button used to pause/play the video */
@@ -276,13 +366,7 @@ h1 {
     margin-top: 2em;
     border-radius: 0.5em;
 }
-
-
 @media (max-width: 995px) and (min-width: 769px) {
-    .card-footer {
-        height: 3em !important;
-    }
-
     .content-card img {
        width: 100%;
     }
@@ -291,14 +375,15 @@ h1 {
         margin-top: 4em;
     }
 
-    .imgMask {
-        width: 640px;
-        height: 480px;
-        margin-top: 0px;
-    }
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 99%;
+        z-index: 300000;
+    }    
 
     .contentVideo {
-        left: 0;
+        left: auto;
         top: 170px;
     }
 
@@ -314,10 +399,6 @@ h1 {
 }
 
 @media (max-width: 768px) {
-    .card-footer {
-        height: 3em !important;
-    }
-
     .content-card img {
        width: 100%;
     }
@@ -327,26 +408,27 @@ h1 {
         height: 740px;
     }
 
-    .imgMask {
-        width: 490px;
-        height: 368px;
-        margin-top: 0px;
-    }
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 98%;
+        z-index: 300000;
+    }    
 
     #myVideo {
-        width: 490px;
+        width: auto;
         height: 368px;
     }
 
     #canvasVideoFront {
-        width: 490px;
+        width: auto;
         height: 368px;
     }
 
     .contentVideo {
         position: fixed;
         top: 200px;
-        left: 0;
+        left: auto;
         width: 100%;
         padding: 20px;  
     }
@@ -363,19 +445,22 @@ h1 {
         margin-top: 6em;
     }
 
-    .imgMask {
-       width: 410px;
-        height: 309px;
-        margin-top: 15px;
+    #myVideo {
+        width: auto;
+        height: 100%;
     }
 
-    #myVideo {
-        width: 410px;
-        height: 340px;
+    #video_overlays {
+        position:absolute;
+        width: 100%;
+        height: 100%;
+        z-index:300000;
+        text-align:center;
     }
+    
 
     #canvasVideoFront {
-        width: 410px;
+        width: auto;
         height: 340px;
     }
 
@@ -395,20 +480,21 @@ h1 {
         margin-top: 6em;
     }
 
-    .imgMask {
-        width: 310px;
-        height: 232px;
-        margin-top: 54px;
+    #myVideo {
+        width: auto;
+        height: 100%;
     }
 
-    #myVideo {
-        width: 310px;
-        height: 340px;
-    }
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 300000;
+    }    
 
     #canvasVideoFront {
-        width: 310px;
-        height: 340px;
+        width: auto;
+        height: 100%;
     }
 
     .contentBtn {
@@ -435,20 +521,21 @@ h1 {
         top: 110px;
     }
 
-    .imgMask {
-        width: 230px;
-        height: 174px;
-        margin-top: 83px;
+    #video_overlays {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 300000;
     }
 
     #myVideo {
-        width: 230px;
-        height: 340px;
+        width: auto;
+        height: 100%;
     }
 
     #canvasVideoFront {
-        width: 230px;
-        height: 340px;
+        width: auto;
+        height: 100%;
     }
 
     h2{

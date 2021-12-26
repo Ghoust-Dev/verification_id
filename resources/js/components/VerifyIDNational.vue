@@ -2,7 +2,7 @@
     <div class="container py-4">
         <!-- <canvas id="target" width="800px" height="400px" style="margin: auto" ref="canvaMask"></canvas> -->
          <div v-if="!idtypeSelected" class="content justify-content-center text-center">
-            <h2 class="py-5">Choose type ID</h2>
+            <h2 class="py-5">Select type ID</h2>
             <div class="row justify-content-center d-flex">
                 <div class="col-md-5 col-lg-4 col-sm-5 col-5 mx-2 content-card" @click="selectTypeVerification(1)">
                     <b-card id="header-card" img-height="300" img-width="175" img-alt="Image" img-top>
@@ -41,7 +41,12 @@
                         <div class="contentBtn justify-content-center">            
                             <button id="myBtn" @click="saveID">Capture</button> 
                         </div>
-                    </div>    
+                    </div> 
+                    <div class="video-options">
+                        <b-form-select >
+                            <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
+                        </b-form-select>
+                    </div>   
                     
                     <div class="outputVideo" hidden>            
                         <canvas v-if="!isBack" id="canvasVideoFront" ref="output"></canvas>
@@ -102,24 +107,55 @@
             idtypeSelected: false,
             identityCard: false,
             passport: false,
+            optionsCam: [],
             }
         },
-        mounted(){
+        async mounted(){
+            const orientation = await window.screen.orientation.type
+             console.log('portrait screen '+window.screen.orientation.type);
+                if (orientation === "portrait-primary") {
+                    this.portrait = true;
+                    console.log('portrait screen '+this.portrait);
+                } else if (orientation === "landscape-primary") {
+                    this.portrait = false;
+                    console.log('landscape screen '+this.portrait);
+                }
+
             window.addEventListener(
                 "orientationchange",
-                this.handleOrientationChange
+                await this.handleOrientationChange
             );
         },
         methods:{
             handleOrientationChange() {
                 const orientation = window.screen.orientation.type
+                    console.log('portrait screen '+orientation);
                 if (orientation === "portrait-primary") {
-                    portrait = true;
+                    this.portrait = true;
+                    console.log('portrait screen '+this.portrait);
                 } else if (orientation === "landscape-primary") {
-                    portrait = false;
+                    this.portrait = false;
+                    console.log('landscape screen '+this.portrait);
                 }
             },
-            selectTypeVerification(value){
+            async getCamera(){ 
+                var vm = this;
+
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                const videoDevices = devices.filter(device => device.kind === 'videoinput');
+                const options = videoDevices.map(videoDevice => {
+                    vm.optionsCam[videoDevice.deviceId] = videoDevice.label;
+                    vm.optionsCam.push(
+                        {
+                            id: videoDevice.deviceId,
+                            value: videoDevice.label
+                        }
+                    );
+                });
+            },
+            selectTypeVerification(value){                
+                this.handleOrientationChange();
+                console.log('portrait screen ');
                 if(value == 1){
                     this.setupPage();
                     this.identityCard = this.idtypeSelected = true;
@@ -181,6 +217,7 @@
                 }; 
                 
                 await tf.setBackend(state.backend);
+                await vm.getCamera();
                 await vm.setupCamera();
                 vm.video.play();
                 
@@ -410,9 +447,6 @@
         }
     }
 }
-
-
-
 
 
 #video_box{

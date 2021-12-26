@@ -1,13 +1,19 @@
 <template>
     <div class="container">
-        <div class="content text-center d-grid">
+        <div class="content text-center d-grid align-content-center">
             <div class="justify-content-center d-flex">
                 <h2>Start recording videos and respect the notes and the time</h2>
             </div>
             
             <div class="my-4 d-flex justify-content-center">
                 <div class="contentVideoRecord">
-                    <video id="myVideo2" class="inputVideo video-js" ref="video" playsinline=""></video>
+                    <div class="" id="video_box">
+                        <div id="video_overlays" class="imgMask">
+                            <img v-if="!portrait" :src="'/assets/face-human.png'"   ref="mask">
+                            <img v-if="!portrait" :src="'/assets/face-human-portrait.png'"   ref="mask">
+                        </div>
+                        <video id="myVideo2" class="inputVideo video-js" ref="video" playsinline=""></video>
+                    </div>                    
                 </div>  
             </div>
             
@@ -61,6 +67,7 @@ import FFmpegjsEngine from 'videojs-record/dist/plugins/videojs.record.ffmpegjs.
             isStartRecording: false,
             isRetakeDisabled: true,
             submitText: 'Submit',
+            portrait:false,
             options: {
                 controls: false,
                 bigPlayButton: false,
@@ -95,6 +102,21 @@ import FFmpegjsEngine from 'videojs-record/dist/plugins/videojs.record.ffmpegjs.
             }
         },
         mounted(){
+            window.addEventListener(
+                "orientationchange",
+                this.handleOrientationChange
+            );
+        
+            const orientation = window.screen.orientation.type
+            console.log('portrait screen '+window.screen.orientation.type);
+            if (orientation === "portrait-primary") {
+                this.portrait = true;
+                console.log('portrait screen '+this.portrait);
+            } else if (orientation === "landscape-primary") {
+                this.portrait = false;
+                console.log('landscape screen '+this.portrait);
+            }
+
             this.generateRandomIndex();
             this.setupPage();
             this.player = videojs('myVideo2', this.options);
@@ -121,6 +143,17 @@ import FFmpegjsEngine from 'videojs-record/dist/plugins/videojs.record.ffmpegjs.
             });
         },
         methods:{
+            handleOrientationChange() {
+                const orientation = window.screen.orientation.type
+                    console.log('portrait screen '+orientation);
+                if (orientation === "portrait-primary") {
+                    this.portrait = true;
+                    console.log('portrait screen '+this.portrait);
+                } else if (orientation === "landscape-primary") {
+                    this.portrait = false;
+                    console.log('landscape screen '+this.portrait);
+                }
+            },
             countDown(){
                 this.lenghtVideo = this.options['plugins']['record']['maxLength'];
                 var time = setInterval(() => {
@@ -208,14 +241,37 @@ import FFmpegjsEngine from 'videojs-record/dist/plugins/videojs.record.ffmpegjs.
     min-height: 600px !important;  
 }
 
+#video_box{
+    position:relative;
+    -webkit-box-align:center;
+    -webkit-box-pack:center;
+    box-align:center;
+    box-pack:center;
+    overflow: hidden;
+}
+
+.imgMask img {    
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#video_overlays {
+    position: absolute;
+    width: 100%;
+    height: 98.8%;
+    z-index: 300000;
+    text-align: center;
+    top: 0%;
+}
+
 #canvasVideo {
     min-width: 700px !important;
     min-height: 600px !important;  
 }
 
 .inputVideo{
-     -webkit-transform: scaleX(1);
-    transform: scaleX(1);
+     -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
     width: auto;
     height: auto;
 }
@@ -284,12 +340,6 @@ h1 {
   font-size:48px;
   font-family: 'Open Sans', sans-serif;
   color: #2FC877;
-}
-
-#idVerification {
-    width: 25%;
-    display: inline-flex;
-    margin: 1.5rem;
 }
 
 .content {
