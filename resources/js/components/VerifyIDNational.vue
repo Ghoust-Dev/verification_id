@@ -200,6 +200,11 @@
                 vm.video = vm.$refs.video;
 
                 if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
+                    const videoStream = await navigator.mediaDevices.getUserMedia(constraints)
+                    videoStream.getTracks().forEach((track) => {
+                        track.stop()
+                    })
+                    print(vm.cameraSelected.value);
                     const updatedConstraints = {
                         deviceId: {
                             exact: vm.cameraSelected.value
@@ -210,10 +215,12 @@
                     
                     return new Promise((resolve) => {
                         vm.video.onloadedmetadata = () => {
-                        resolve(vm.video);
+                            resolve(vm.video);
                         };
                     });
                 }
+                
+                vm.video.play();
             },
             saveID(){
                 var vm = this;
