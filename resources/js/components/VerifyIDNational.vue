@@ -43,7 +43,7 @@
                         </div>
                     </div> 
                     <div class="video-options">
-                        <b-form-select >
+                        <b-form-select v-model="cameraSelected" @change="changeCam($event)">
                             <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
                         </b-form-select>
                     </div>   
@@ -108,6 +108,7 @@
             identityCard: false,
             passport: false,
             optionsCam: [],
+            cameraSelected: null,
             }
         },
         async mounted(){
@@ -164,52 +165,6 @@
                     this.passport =  this.idtypeSelected = true;
                 }
             },
-            // async renderPrediction(){
-            //     var vm = this
-            //     const returnTensors = false;
-            //     const flipHorizontal = true;
-            //     const annotateBoxes = true;
-            //     const predictions = await vm.model.estimateFaces(
-            //     vm.video, returnTensors, flipHorizontal, annotateBoxes, );                
-                
-            //     if(predictions.length == 0){
-            //         this.capture = false;
-            //         vm.ctx.clearRect(0, 0, vm.canvas.width, vm.canvas.height);
-            //         vm.ctx.beginPath();
-            //         vm.ctx.lineWidth = 4;
-            //         vm.ctx.strokeStyle = "red";
-            //         vm.ctx.rect(100, 100, 100, 100);
-            //         vm.ctx.stroke();
-            //     }
-
-            //     this.capture = true;
-            //     vm.ctx.clearRect(0, 0, vm.canvas.width, vm.canvas.height);
-            //     for (let i = 0; i < predictions.length; i++) {
-            //         if (returnTensors) {
-            //             predictions[i].topLeft = predictions[i].topLeft.arraySync();
-            //             predictions[i].bottomRight = predictions[i].bottomRight.arraySync();
-            //             if (annotateBoxes) {
-            //             predictions[i].landmarks = predictions[i].landmarks.arraySync();
-            //             }
-            //         }
-            //         try {
-            //             vm.prediction += 'Probability ' + i + ' : ' + predictions[i].probability 
-                        
-            //         }
-            //         catch(err){
-            //             vm.prediction= err.message
-            //         }
-
-            //         vm.ctx.beginPath();
-            //         vm.ctx.lineWidth = 4;
-            //         vm.ctx.strokeStyle = "green";
-            //         vm.ctx.rect(predictions[i].topLeft[0], predictions[i].topLeft[1], predictions[i].bottomRight[0] - predictions[i].topLeft[0], predictions[i].bottomRight[1] -predictions[i].topLeft[1]);
-            //         vm.ctx.stroke();
-            //     }  
-
-            //     requestAnimationFrame(vm.renderPrediction);
-
-            // },
             async setupPage() {
                 var vm = this ;
                 const state = {
@@ -223,17 +178,6 @@
                 
                 this.videoWidth = vm.video.videoWidth;
                 this.videoHeight = vm.video.videoHeight;
-                
-                // vm.canvas = vm.$refs.output;
-                // vm.canvas.width = this.videoWidth;
-                // vm.canvas.height = this.videoHeight;
-                // vm.ctx = vm.canvas.getContext('2d');
-                // vm.ctx.fillStyle = "rgba(255, 0, 0, 0.5)";
-                // vm.videoHeight = window.innerHeight;
-                // vm.videoMarginLeftAdjust =   ( window.innerWidth - this.videoWidth) / 2;
-                // vm.model = await blazeface.load();
-                
-                // vm.renderPrediction();
             },
             async setupCamera() {    
                 var vm = this
@@ -241,7 +185,7 @@
                 
                 const stream = await navigator.mediaDevices.getUserMedia({
                 'audio': false,
-                'video': { facingMode: vm.facingmode },
+                'video': { facingMode: vm.facingMode },
                 });
                 vm.video.srcObject = stream;
                 
@@ -250,6 +194,26 @@
                     resolve(vm.video);
                     };
                 });
+            },
+           async changeCam(event) {
+                var vm = this
+                vm.video = vm.$refs.video;
+
+                if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
+                    const updatedConstraints = {
+                        deviceId: {
+                            exact: vm.cameraSelected.value
+                        }
+                    };
+                    const stream = await navigator.mediaDevices.getUserMedia(updatedConstraints);
+                    vm.video.srcObject = stream;
+                    
+                    return new Promise((resolve) => {
+                        vm.video.onloadedmetadata = () => {
+                        resolve(vm.video);
+                        };
+                    });
+                }
             },
             saveID(){
                 var vm = this;
@@ -260,41 +224,6 @@
 
                 const context = vm.$refs.output.getContext('2d');                                 
                 context.drawImage(vm.$refs.video, 0, 0);
-
-                // var canvas = document.createElement("canvas");
-                // var ctxMask = canvas.getContext('2d');
-                // var targetCtx = target.getContext('2d');
-
-                // var l = (vm.$refs.output.width / 2) - (vm.$refs.mask.width / 10), t = (vm.$refs.output.height / 7) - (vm.$refs.mask.height / 25);        
-                
-                // ctxMask.drawImage(vm.$refs.mask, l, t);
-                // ctxMask.globalCompositeOperation = "source-in";
-                // ctxMask.drawImage(vm.$refs.output, 0, 0);
-                        
-                // var imageData = ctxMask.getImageData(l, t, vm.$refs.mask.width, vm.$refs.mask.height);                                       
-                // targetCtx.putImageData(imageData, 50, 50);     
-                // const canv = document.getElementById("target").toDataURL("image/jpeg");
-                // canv.replace('data:image/jpeg;base64,', '');
-                
-
-                // let blobToFile = vm.dataURItoBlob(canv);
-                    
-                //     const cfile = new File([blobToFile], "recard-"+this.$store.state.idVerification + ".jpg",
-                //             {type: "image/jpeg", lastModified: Date.now()});
-                    
-                //     formData.append('photo', cfile);
-                //     formData.append('idverification', this.$store.state.idVerification);
-    
-                //     vm.$auth.post('/api/uploadPhoto', formData, {
-                //             headers: {
-                //                 'Content-Type': 'multipart/form-data',
-                //                 }
-                //         }).then(result => {     
-                //             console.log(this.$store.state.idVerification); 
-                //             console.log(blobToFile);     
-                //         }).catch(err => {
-                            
-                //     });
 
                 if(!vm.isBack){
                     const canvas = document.getElementById("canvasVideoFront").toDataURL("image/jpeg");
