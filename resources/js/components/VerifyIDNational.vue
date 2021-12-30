@@ -31,6 +31,13 @@
                 <div  class="">
                     <div v-if="showModal" @close="showModal = false"> </div>
                     <div id="video_box">
+                        <div data-v-cc8d46de="" id="video_overlays" class="imgMask" @click="changeCam" style="
+                            height: 10%;
+                            top: 88%;
+                            z-index: 500000;
+                        ">
+                            <img data-v-cc8d46de="" else="" src="/assets/camera-icon.png">
+                        </div>
                         <div id="video_overlays" class="imgMask">            
                             <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"   ref="mask">
                             <img else :src="'/assets/cadre-id.png'"   ref="mask">
@@ -43,7 +50,7 @@
                         </div>
                     </div> 
                     <div class="video-options">
-                        <b-form-select v-model="cameraSelected" @change="changeCam($event)">
+                        <b-form-select v-model="cameraSelected">
                             <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
                         </b-form-select>
                     </div>   
@@ -108,7 +115,7 @@
             identityCard: false,
             passport: false,
             optionsCam: [],
-            cameraSelected: null,
+            cameraSelected: 0,
             }
         },
         async mounted(){
@@ -195,19 +202,24 @@
                     };
                 });
             },
-           async changeCam(event) {
+           async changeCam() {
                 var vm = this
                 vm.video = vm.$refs.video;
 
                 if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
-                    const videoStream = await navigator.mediaDevices.getUserMedia(constraints)
+                    const videoStream = await await navigator.mediaDevices.getUserMedia({
+                    'audio': false,
+                    'video': "environment",
+                    });
                     videoStream.getTracks().forEach((track) => {
                         track.stop()
                     })
-                    print(vm.cameraSelected.value);
+                    console.log('camera selected '+vm.cameraSelected);
                     const updatedConstraints = {
+                        'audio': false,
+                        'video': "environment",
                         deviceId: {
-                            exact: vm.cameraSelected.value
+                            exact: vm.cameraSelected
                         }
                     };
                     const stream = await navigator.mediaDevices.getUserMedia(updatedConstraints);
@@ -219,7 +231,7 @@
                         };
                     });
                 }
-                
+                this.setupPage();
                 vm.video.play();
             },
             saveID(){
