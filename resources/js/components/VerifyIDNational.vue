@@ -148,10 +148,12 @@
             },
             async getCamera(){ 
                 var vm = this;
-
-                const devices = await navigator.mediaDevices.enumerateDevices();
+                 vm.optionsCam = [];
+                 if (window.isSecureContext) {
+                    const devices = await navigator.mediaDevices.enumerateDevices();
+                 }
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
-                const options = videoDevices.map(videoDevice => {
+                videoDevices.map(videoDevice => {
                     vm.optionsCam[videoDevice.deviceId] = videoDevice.label;
                     vm.optionsCam.push(
                         {
@@ -192,7 +194,7 @@
                 
                 const stream = await navigator.mediaDevices.getUserMedia({
                 'audio': false,
-                'video': "environment",
+                'video': "environment",                 
                 });
                 vm.video.srcObject = stream;
                 
@@ -205,21 +207,20 @@
            async changeCam() {
                 var vm = this
                 vm.video = vm.$refs.video;
-
+                vm.setupPage();
                 if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
-                    const videoStream = await await navigator.mediaDevices.getUserMedia({
-                    'audio': false,
-                    'video': "environment",
-                    });
-                    videoStream.getTracks().forEach((track) => {
-                        track.stop()
-                    })
+                    // const videoStream = await await navigator.mediaDevices.getUserMedia({
+                    // 'audio': false,
+                    // 'video': "environment",
+                    // });
+
                     console.log('camera selected '+vm.cameraSelected);
                     const updatedConstraints = {
                         'audio': false,
-                        'video': "environment",
-                        deviceId: {
-                            exact: vm.cameraSelected
+                        'video': {
+                            'exact': {
+                                exact: vm.cameraSelected,
+                            },
                         }
                     };
                     const stream = await navigator.mediaDevices.getUserMedia(updatedConstraints);
@@ -231,8 +232,10 @@
                         };
                     });
                 }
-                this.setupPage();
                 vm.video.play();
+                
+                this.videoWidth = vm.video.videoWidth;
+                this.videoHeight = vm.video.videoHeight;
             },
             saveID(){
                 var vm = this;
