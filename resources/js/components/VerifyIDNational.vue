@@ -205,35 +205,49 @@
            async changeCam() {
                 var vm = this
                 vm.video = vm.$refs.video;
-                vm.setupPage();
-                if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
-                    // const videoStream = await await navigator.mediaDevices.getUserMedia({
-                    // 'audio': false,
-                    // 'video': "environment",
-                    // });
-
-                    console.log('camera selected '+vm.cameraSelected);
-                    const updatedConstraints = {
-                        'audio': false,
-                        'video': {
-                            'exact': {
-                                exact: vm.cameraSelected,
-                            },
-                        }
-                    };
-                    const stream = await navigator.mediaDevices.getUserMedia(updatedConstraints);
-                    vm.video.srcObject = stream;
-                    
-                    return new Promise((resolve) => {
-                        vm.video.onloadedmetadata = () => {
-                            resolve(vm.video);
-                        };
+                vm.video.pause();
+                
+                if (this._stream) {
+                this._stream.getTracks().forEach(track => {
+                        track.stop();
                     });
                 }
-                vm.video.play();
+
+                const videoSource = vm.cameraSelected;
+                const constraints = {
+                    audio: false,
+                    video: {
+                        deviceId: videoSource ? {exact: videoSource} : undefined
+                    }
+                };
+    
+                 vm.video.srcObject = await navigator.mediaDevices.getUserMedia(constraints);
+                 vm.video.play();
+                  console.log('camera selected '+vm.cameraSelected);
+                // vm.setupPage();
+                // if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
+                //     console.log('camera selected '+vm.cameraSelected);
+                //     const updatedConstraints = {
+                //         'audio': false,
+                //         'video': {
+                //             'exact': {
+                //                 exact: vm.cameraSelected,
+                //             },
+                //         }
+                //     };
+                //     const stream = await navigator.mediaDevices.getUserMedia(updatedConstraints);
+                //     vm.video.srcObject = stream;
+                    
+                //     return new Promise((resolve) => {
+                //         vm.video.onloadedmetadata = () => {
+                //             resolve(vm.video);
+                //         };
+                //     });
+                // }
+                // vm.video.play();
                 
-                this.videoWidth = vm.video.videoWidth;
-                this.videoHeight = vm.video.videoHeight;
+                // this.videoWidth = vm.video.videoWidth;
+                // this.videoHeight = vm.video.videoHeight;
             },
             saveID(){
                 var vm = this;
