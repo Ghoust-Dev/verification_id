@@ -116,6 +116,14 @@
             passport: false,
             optionsCam: [],
             cameraSelected: 0,
+            switchFlag: false,
+            constraints: {
+                video: {                    
+                    facingMode: {
+                    exact: "user"
+                    }
+                }
+            },
             }
         },
         async mounted(){
@@ -202,31 +210,51 @@
                     };
                 });
             },
-           async changeCam() {
+            stopCapture() {
                 var vm = this
                 vm.video = vm.$refs.video;
-                vm.video.pause();
-                
-                if (vm.video.srcObject) {
-                vm.video.srcObject.getTracks().forEach(track => {
-                        track.stop();
-                    });
-                }
 
-                const videoSource = vm.cameraSelected;
-                const constraints = {
-                    audio: false,
-                    // video: {
-                    //     deviceId: videoSource ? {exact: videoSource} : undefined
-                    // },
-                    video: {
-                        facingMode: {
-                            exact: 'environment',
+                let stream = vm.video.srcObject;
+                let tracks = stream.getTracks();
+
+                tracks.forEach(function(track) {
+                    track.stop();
+                });
+
+                vm.video.srcObject = null;
+            },
+            async changeCam() {
+                var vm = this;
+                vm.video = vm.$refs.video;
+
+                vm.stopCapture();
+                vm.video.remove();
+
+                vm.switchFlag = !vm.switchFlag;
+
+                // const videoSource = vm.cameraSelected;
+
+                if(!vm.switchFlag){
+                    vm.constraints = {
+                        audio: false,
+                        video: {
+                            facingMode: {
+                                exact: 'environment',
+                            },
                         },
-                    },
-                };
+                    };
+                }else{
+                    vm.constraints = {
+                        audio: false,
+                        video: {
+                            facingMode: {
+                                exact: 'user',
+                            },
+                        },
+                    };
+                }
     
-                 navigator.mediaDevices.getUserMedia(constraints).then(stream => (vm.video.srcObject = stream)).catch(e => console.log(e));
+                await navigator.mediaDevices.getUserMedia(vm.constraints).then(stream => (vm.video.srcObject = stream)).catch(e => console.log(e));
                 //  vm.video.play();
                   console.log('camera selected '+vm.cameraSelected);
                 // vm.setupPage();
