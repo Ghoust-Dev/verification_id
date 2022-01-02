@@ -232,14 +232,14 @@
 
                 vm.switchFlag = !vm.switchFlag;
 
-                // const videoSource = vm.cameraSelected;
+                const videoSource = vm.cameraSelected;
 
                 if(!vm.switchFlag){
                     vm.constraints = {
                         audio: false,
                         video: {
                             facingMode: {
-                                exact: 'environment',
+                                exact: videoSource,
                             },
                         },
                     };
@@ -248,7 +248,7 @@
                         audio: false,
                         video: {
                             facingMode: {
-                                exact: 'user',
+                                exact: videoSource,
                             },
                         },
                     };
