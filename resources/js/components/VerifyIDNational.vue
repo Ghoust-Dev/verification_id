@@ -207,8 +207,8 @@
                 vm.video = vm.$refs.video;
                 vm.video.pause();
                 
-                if (this._stream) {
-                this._stream.getTracks().forEach(track => {
+                if (vm.video.srcObject) {
+                vm.video.srcObject.getTracks().forEach(track => {
                         track.stop();
                     });
                 }
@@ -216,13 +216,18 @@
                 const videoSource = vm.cameraSelected;
                 const constraints = {
                     audio: false,
+                    // video: {
+                    //     deviceId: videoSource ? {exact: videoSource} : undefined
+                    // },
                     video: {
-                        deviceId: videoSource ? {exact: videoSource} : undefined
-                    }
+                        facingMode: {
+                            exact: 'environment',
+                        },
+                    },
                 };
     
-                 vm.video.srcObject = await navigator.mediaDevices.getUserMedia(constraints);
-                 vm.video.play();
+                 navigator.mediaDevices.getUserMedia(constraints).then(stream => (vm.video.srcObject = stream)).catch(e => console.log(e));
+                //  vm.video.play();
                   console.log('camera selected '+vm.cameraSelected);
                 // vm.setupPage();
                 // if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
