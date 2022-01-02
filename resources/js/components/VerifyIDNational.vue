@@ -149,9 +149,7 @@
             async getCamera(){ 
                 var vm = this;
                  vm.optionsCam = [];
-                 if (window.isSecureContext) {
-                    const devices = await navigator.mediaDevices.enumerateDevices();
-                 }
+                const devices = await navigator.mediaDevices.enumerateDevices();
                 const videoDevices = devices.filter(device => device.kind === 'videoinput');
                 videoDevices.map(videoDevice => {
                     vm.optionsCam[videoDevice.deviceId] = videoDevice.label;
