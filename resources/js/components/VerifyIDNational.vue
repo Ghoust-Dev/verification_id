@@ -1,7 +1,7 @@
 <template>
     <div class="container py-4">
         <!-- <canvas id="target" width="800px" height="400px" style="margin: auto" ref="canvaMask"></canvas> -->
-         <!-- <div v-if="!idtypeSelected" class="content justify-content-center text-center">
+         <div v-if="!idtypeSelected" class="content justify-content-center text-center">
             <h2 class="py-5">Select type ID</h2>
             <div class="row justify-content-center d-flex">
                 <div class="col-md-5 col-lg-4 col-sm-5 col-5 mx-2 content-card" @click="selectTypeVerification(1)">
@@ -21,11 +21,11 @@
                     </b-card>
                 </div>
             </div>
-        </div> -->
-        <video id="videoTest" controls autoplay playsInline></video>
+        </div>
+        <!-- <video id="videoTest" controls autoplay playsInline></video>
         <div>
             <button id="btn-front" @click="changeCam">Change cam</button>
-        </div>
+        </div> -->
         <div v-if="idtypeSelected && identityCard">
             <div class="content text-center d-grid align-content-center">
                 <div class="row">
@@ -212,83 +212,76 @@
                 });
             },
             async changeCam() {
-                // var vm = this;
-                // vm.video = vm.$refs.video;
-                // let stream;
-
+                var vm = this;
+                vm.video = vm.$refs.video;
                 var facingMode = '';
 
                 vm.switchFlag = !vm.switchFlag;
-                console.log('switchFlag '+vm.switchFlag);
 
                 if(vm.switchFlag){
-                    facingMode = 'user';
+                    // facingMode = 'user';
                     vm.constraints = {
                         audio: false,
                         video: {
                             facingMode: {
-                                exact: 'user',
+                                exact: vm.cameraSelected,
                             },
                         },
                     };
                 }else{
-                    facingMode = 'environment';
+                    // facingMode = 'environment';
                     vm.constraints = {
                         audio: false,
                         video: {
                             facingMode: {
-                                exact: 'environment',
+                                exact: vm.cameraSelected,
                             },
                         },
                     };
                 }
+
+                if (stream) {
+                    const tracks = stream.getTracks();
+                    tracks.forEach(track => track.stop());
+                }
+                
+                stream = await navigator.mediaDevices.getUserMedia(vm.constraints);               
+
+                vm.video.srcObject = null;
+                vm.video.srcObject = stream;
+                vm.video.play();
+
+                // const videoElm = document.querySelector('#videoTest');
+
+                // const supports = navigator.mediaDevices.getSupportedConstraints();
+                // if (!supports['facingMode']) {
+                //     alert('Browser Not supported!');
+                //     return;
+                // }
+
+                // let stream;
+
+                // const options = {
+                //     audio: false,
+                //     video: {
+                //         facingMode,
+                //     },
+                // };
 
                 // try {
                 //     if (stream) {
                 //         const tracks = stream.getTracks();
                 //         tracks.forEach(track => track.stop());
                 //     }
-                //     stream = await navigator.mediaDevices.getUserMedia(vm.constraints);
+                //     stream = await navigator.mediaDevices.getUserMedia(options);
                 // } catch (e) {
                 //     alert(e);
-                //     return;
+                // return;
                 // }
 
-                // vm.video.srcObject = null;
-                // vm.video.srcObject = stream;
-                // vm.video.play();
-
-                const videoElm = document.querySelector('#videoTest');
-
-                const supports = navigator.mediaDevices.getSupportedConstraints();
-                if (!supports['facingMode']) {
-                    alert('Browser Not supported!');
-                    return;
-                }
-
-                let stream;
-
-                const options = {
-                    audio: false,
-                    video: {
-                        facingMode,
-                    },
-                };
-
-                try {
-                    if (stream) {
-                        const tracks = stream.getTracks();
-                        tracks.forEach(track => track.stop());
-                    }
-                    stream = await navigator.mediaDevices.getUserMedia(options);
-                } catch (e) {
-                    alert(e);
-                return;
-                }
-
-                videoElm.srcObject = null;
-                videoElm.srcObject = stream;
-                videoElm.play();
+                // videoElm.srcObject = null;
+                // videoElm.srcObject = stream;
+                // videoElm.play();
             },
             saveID(){
                 var vm = this;
