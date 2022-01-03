@@ -198,10 +198,7 @@
                 var vm = this
                 vm.video = vm.$refs.video;
                 
-                const stream = await navigator.mediaDevices.getUserMedia({
-                'audio': false,
-                'video': "environment",                 
-                });
+                const stream = await navigator.mediaDevices.getUserMedia(vm.constraints);
                 vm.video.srcObject = stream;
                 
                 return new Promise((resolve) => {
@@ -210,36 +207,20 @@
                     };
                 });
             },
-            stopCapture() {
-                var vm = this
-                vm.video = vm.$refs.video;
-
-                let stream = vm.video.srcObject;
-                let tracks = stream.getTracks();
-
-                tracks.forEach(function(track) {
-                    track.stop();
-                });
-
-                vm.video.srcObject = null;
-            },
             async changeCam() {
                 var vm = this;
                 vm.video = vm.$refs.video;
-
-                vm.stopCapture();
-                vm.video.remove();
+                let stream;
 
                 vm.switchFlag = !vm.switchFlag;
+                console.log('switchFlag '+vm.switchFlag);
 
-                const videoSource = vm.cameraSelected;
-
-                if(!vm.switchFlag){
+                if(vm.switchFlag){
                     vm.constraints = {
                         audio: false,
                         video: {
                             facingMode: {
-                                exact: videoSource,
+                                exact: 'user',
                             },
                         },
                     };
@@ -248,39 +229,26 @@
                         audio: false,
                         video: {
                             facingMode: {
-                                exact: videoSource,
+                                exact: 'environment',
                             },
                         },
                     };
                 }
-    
-                await navigator.mediaDevices.getUserMedia(vm.constraints).then(stream => (vm.video.srcObject = stream)).catch(e => console.log(e));
-                //  vm.video.play();
-                  console.log('camera selected '+vm.cameraSelected);
-                // vm.setupPage();
-                // if ('mediaDevices' in navigator && navigator.mediaDevices.getUserMedia) {
-                //     console.log('camera selected '+vm.cameraSelected);
-                //     const updatedConstraints = {
-                //         'audio': false,
-                //         'video': {
-                //             'exact': {
-                //                 exact: vm.cameraSelected,
-                //             },
-                //         }
-                //     };
-                //     const stream = await navigator.mediaDevices.getUserMedia(updatedConstraints);
-                //     vm.video.srcObject = stream;
-                    
-                //     return new Promise((resolve) => {
-                //         vm.video.onloadedmetadata = () => {
-                //             resolve(vm.video);
-                //         };
-                //     });
-                // }
-                // vm.video.play();
-                
-                // this.videoWidth = vm.video.videoWidth;
-                // this.videoHeight = vm.video.videoHeight;
+
+                try {
+                    if (stream) {
+                        const tracks = stream.getTracks();
+                        tracks.forEach(track => track.stop());
+                    }
+                    stream = await navigator.mediaDevices.getUserMedia(vm.constraints);
+                } catch (e) {
+                    alert(e);
+                    return;
+                }
+
+                vm.video.srcObject = null;
+                vm.video.srcObject = stream;
+                vm.video.play();
             },
             saveID(){
                 var vm = this;
