@@ -22,10 +22,6 @@
                 </div>
             </div>
         </div>
-        <!-- <video id="videoTest" controls autoplay playsInline></video>
-        <div>
-            <button id="btn-front" @click="changeCam">Change cam</button>
-        </div> -->
         <div v-if="idtypeSelected && identityCard">
             <div class="content text-center d-grid align-content-center">
                 <div class="row">
@@ -35,29 +31,29 @@
                 <div  class="">
                     <div v-if="showModal" @close="showModal = false"> </div>
                     <div id="video_box">
-                        <div data-v-cc8d46de="" id="video_overlays" class="imgMask" @click="changeCam" style="
+                        <!-- <div data-v-cc8d46de="" id="video_overlays" class="imgMask" style="
                             height: 10%;
                             top: 88%;
                             z-index: 500000;
                         ">
                             <img data-v-cc8d46de="" else="" src="/assets/camera-icon.png">
-                        </div>
+                        </div> -->
                         <div id="video_overlays" class="imgMask">            
                             <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"   ref="mask">
                             <img else :src="'/assets/cadre-id.png'"   ref="mask">
                         </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
-                    </div>    
+                    </div>   
+                    <div class="video-options">
+                        <b-form-select v-model="cameraSelected"  @change="changeCam">
+                            <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
+                        </b-form-select>
+                    </div>   
                     <div class="row mt-2">
                         <div class="contentBtn justify-content-center">            
                             <button id="myBtn" @click="saveID">Capture</button> 
                         </div>
                     </div> 
-                    <div class="video-options">
-                        <b-form-select v-model="cameraSelected">
-                            <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
-                        </b-form-select>
-                    </div>   
                     
                     <div class="outputVideo" hidden>            
                         <canvas v-if="!isBack" id="canvasVideoFront" ref="output"></canvas>
@@ -124,7 +120,7 @@
             constraints: {
                 video: {                    
                     facingMode: {
-                    exact: "user"
+                        exact: "user"
                     }
                 }
             },
@@ -202,7 +198,10 @@
                 var vm = this
                 vm.video = vm.$refs.video;
                 
-                const stream = await navigator.mediaDevices.getUserMedia(vm.constraints);
+                const stream = await navigator.mediaDevices.getUserMedia({
+                'audio': false,
+                'video': "environment",                 
+                });
                 vm.video.srcObject = stream;
                 
                 return new Promise((resolve) => {
@@ -211,77 +210,38 @@
                     };
                 });
             },
+            stopCapture() {
+                var vm = this
+                vm.video = vm.$refs.video;
+
+                let stream = vm.video.srcObject;
+                let tracks = stream.getTracks();
+
+                tracks.forEach(function(track) {
+                    track.stop();
+                });
+
+                vm.video.srcObject = null;
+            },
             async changeCam() {
                 var vm = this;
                 vm.video = vm.$refs.video;
-                var facingMode = '';
 
-                vm.switchFlag = !vm.switchFlag;
+                vm.stopCapture();
 
-                if(vm.switchFlag){
-                    // facingMode = 'user';
-                    vm.constraints = {
-                        audio: false,
-                        video: {
-                            facingMode: {
-                                exact: vm.cameraSelected,
-                            },
+                vm.constraints = {
+                    audio: false,
+                    video: {
+                        deviceId: {
+                            exact: vm.cameraSelected,
                         },
-                    };
-                }else{
-                    // facingMode = 'environment';
-                    vm.constraints = {
-                        audio: false,
-                        video: {
-                            facingMode: {
-                                exact: vm.cameraSelected,
-                            },
-                        },
-                    };
-                }
-
-                if (stream) {
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                }
-                
-                stream = await navigator.mediaDevices.getUserMedia(vm.constraints);               
-
-                vm.video.srcObject = null;
-                vm.video.srcObject = stream;
+                    },
+                };
+    
+                await navigator.mediaDevices.getUserMedia(vm.constraints).then(stream => (vm.video.srcObject = stream)).catch(e => console.log(e));
                 vm.video.play();
 
-                // const videoElm = document.querySelector('#videoTest');
-
-                // const supports = navigator.mediaDevices.getSupportedConstraints();
-                // if (!supports['facingMode']) {
-                //     alert('Browser Not supported!');
-                //     return;
-                // }
-
-                // let stream;
-
-                // const options = {
-                //     audio: false,
-                //     video: {
-                //         facingMode,
-                //     },
-                // };
-
-                // try {
-                //     if (stream) {
-                //         const tracks = stream.getTracks();
-                //         tracks.forEach(track => track.stop());
-                //     }
-                //     stream = await navigator.mediaDevices.getUserMedia(options);
-                // } catch (e) {
-                //     alert(e);
-                // return;
-                // }
-
-                // videoElm.srcObject = null;
-                // videoElm.srcObject = stream;
-                // videoElm.play();
+                console.log(vm.cameraSelected);
             },
             saveID(){
                 var vm = this;
