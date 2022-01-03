@@ -476,7 +476,7 @@ h1 {
 
 @media (max-width: 480px) {
     .content {
-        height: 500px;
+        height: 520px;
         margin-top: 6em;
     }
 
@@ -513,7 +513,7 @@ h1 {
 
 @media (max-width: 370px) {
     .content {
-        height: 410px;
+        height: 480px;
     }
 
 

@@ -10,7 +10,7 @@
                     <div class="" id="video_box">
                         <div id="video_overlays" class="imgMask">
                             <img v-if="!portrait" :src="'/assets/face-human.png'"   ref="mask">
-                            <img v-if="!portrait" :src="'/assets/face-human-portrait.png'"   ref="mask">
+                            <img else :src="'/assets/face-human-portrait.png'"   ref="mask">
                         </div>
                         <video id="myVideo2" class="inputVideo video-js" ref="video" playsinline=""></video>
                     </div>                    

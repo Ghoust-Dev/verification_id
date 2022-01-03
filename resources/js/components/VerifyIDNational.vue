@@ -1,6 +1,5 @@
 <template>
     <div class="container py-4">
-        <!-- <canvas id="target" width="800px" height="400px" style="margin: auto" ref="canvaMask"></canvas> -->
          <div v-if="!idtypeSelected" class="content justify-content-center text-center">
             <h2 class="py-5">Select type ID</h2>
             <div class="row justify-content-center d-flex">
@@ -31,13 +30,6 @@
                 <div  class="">
                     <div v-if="showModal" @close="showModal = false"> </div>
                     <div id="video_box">
-                        <!-- <div data-v-cc8d46de="" id="video_overlays" class="imgMask" style="
-                            height: 10%;
-                            top: 88%;
-                            z-index: 500000;
-                        ">
-                            <img data-v-cc8d46de="" else="" src="/assets/camera-icon.png">
-                        </div> -->
                         <div id="video_overlays" class="imgMask">            
                             <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"   ref="mask">
                             <img else :src="'/assets/cadre-id.png'"   ref="mask">
@@ -653,7 +645,7 @@ h1 {
 
 @media (max-width: 480px) {
     .content {
-        height: 500px;
+        height: 520px;
         margin-top: 6em;
     }
 
@@ -690,7 +682,7 @@ h1 {
 
 @media (max-width: 370px) {
     .content {
-        height: 410px;
+        height: 480px;
     }
 
 
