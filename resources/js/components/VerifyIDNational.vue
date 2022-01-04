@@ -67,7 +67,8 @@
                     <div v-if="showModal" @close="showModal = false"> </div>
                     <div id="video_box">
                         <div id="video_overlays" class="imgMask">            
-                            <img :src="'/assets/cadre-id.png'"  >
+                            <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"  ref="mask">
+                            <img v-if="!portrait" :src="'/assets/cadre-id.png'"   ref="mask">
                         </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
                     </div>    
