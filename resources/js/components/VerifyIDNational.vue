@@ -492,11 +492,6 @@
     max-height: 100%;
 }
 
-.imgMask_back img {    
-    max-width: 100%;
-    max-height: 100%;
-}
-
 .contentBtn {
     color: #f1f1f1;
     width: 100%;  
@@ -695,7 +690,7 @@ h1 {
         top: 140px;
     }
 
-    .imgMask_back img {    
+    .imgMask img {    
         max-width: 90%;
     }
 }
@@ -711,7 +706,7 @@ h1 {
         top: 110px;
     }
 
-    .imgMask_back img {    
+    .imgMask img {    
         max-width: 85%;
     }
 

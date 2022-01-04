@@ -2,7 +2,7 @@
     <div class="container">
         <div class="content d-grid align-content-center text-center">
             <div class="row">
-                <h2 class="mb-5">Take Selfie with ID</h2>
+                <h2 class="">Take Selfie with ID</h2>
             </div>            
                 <div id="video_box">
                     <div id="video_overlays" class="imgMask">            
@@ -90,9 +90,10 @@ export default {
             vm.video = vm.$refs.video;
             
             const stream = await navigator.mediaDevices.getUserMedia({
-            'audio': false,
-            'video': { facingMode: vm.facingMode },
-            });
+                'audio': false,
+                'video': { facingMode: vm.facingMode },
+                }
+            );
             vm.video.srcObject = stream;
             
             return new Promise((resolve) => {
@@ -476,8 +477,8 @@ h1 {
 
 @media (max-width: 480px) {
     .content {
-        height: 520px;
-        margin-top: 6em;
+        height: 640px;
+        margin-top: 1.5em;
     }
 
     #myVideo {
@@ -501,8 +502,10 @@ h1 {
         margin-bottom: 3em;
     }  
     
-    .imgMask_back img {    
-        max-width: 90%;
+    .imgMask img {    
+        max-width: 90% !important;
+        max-height: 100%;
+        margin-top: 3px;
     }
 
     h2{
@@ -517,7 +520,8 @@ h1 {
 
 @media (max-width: 370px) {
     .content {
-        height: 480px;
+        height: 600px;
+        margin-top: 1em;
     }
 
 
@@ -525,8 +529,10 @@ h1 {
         top: 110px;
     }    
     
-    .imgMask_back img {    
+    .imgMask img {    
         max-width: 85%;
+        max-height: 100%;
+        margin-top: 3px;
     }
 
     #video_overlays {
