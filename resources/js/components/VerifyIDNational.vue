@@ -39,11 +39,6 @@
                     <div class="my-3" @click="changeCam">            
                         <img class="ChangeCamBtn" :src="'/assets/camera-icon.png'">
                     </div> 
-                    <!-- <div class="video-options">
-                        <b-form-select v-model="cameraSelected"  @change="changeCam">
-                            <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
-                        </b-form-select>
-                    </div>    -->
                     <div class="row mt-2">
                         <div class="contentBtn justify-content-center">            
                             <button id="myBtn" @click="saveID">Capture</button> 
@@ -71,7 +66,10 @@
                             <img v-if="!portrait" :src="'/assets/cadre-id.png'"   ref="mask">
                         </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
-                    </div>    
+                    </div>   
+                    <div class="my-3" @click="changeCam">            
+                        <img class="ChangeCamBtn" :src="'/assets/camera-icon.png'">
+                    </div>  
                     <div class="row">
                         <div class="contentBtn justify-content-center">            
                             <button id="myBtn" @click="savePassport">Capture</button> 
