@@ -31,16 +31,19 @@
                     <div v-if="showModal" @close="showModal = false"> </div>
                     <div id="video_box">
                         <div id="video_overlays" class="imgMask">            
-                            <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"   ref="mask">
-                            <img else :src="'/assets/cadre-id.png'"   ref="mask">
+                            <img v-if="portrait" :src="'/assets/cadre-id-portrait.png'"  ref="mask">
+                            <img v-if="!portrait" :src="'/assets/cadre-id.png'"   ref="mask">
                         </div>
                         <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
-                    </div>   
-                    <div class="video-options">
+                    </div>  
+                    <div class="my-3" @click="changeCam">            
+                        <img class="ChangeCamBtn" :src="'/assets/camera-icon.png'">
+                    </div> 
+                    <!-- <div class="video-options">
                         <b-form-select v-model="cameraSelected"  @change="changeCam">
                             <b-form-select-option v-for="cam in optionsCam"  :key="cam.id" :value="cam.id">{{cam.value}}</b-form-select-option>
                         </b-form-select>
-                    </div>   
+                    </div>    -->
                     <div class="row mt-2">
                         <div class="contentBtn justify-content-center">            
                             <button id="myBtn" @click="saveID">Capture</button> 
@@ -218,7 +221,15 @@
             async changeCam() {
                 var vm = this;
                 vm.video = vm.$refs.video;
+                
+                if(!vm.switchFlag){
+                    vm.cameraSelected = vm.optionsCam[0].id
+                }else{
+                    vm.cameraSelected = vm.optionsCam[1].id
+                }
 
+                vm.switchFlag = !vm.switchFlag;
+                
                 vm.stopCapture();
 
                 vm.constraints = {
@@ -535,6 +546,11 @@ h1 {
     border-radius: 0.5em;
 }
 
+.ChangeCamBtn {
+    height: 4em;
+}
+
+
 @media (max-width: 995px) and (min-width: 769px) {
     .content-card img {
        width: 100%;
@@ -645,12 +661,12 @@ h1 {
 
 @media (max-width: 480px) {
     .content {
-        height: 520px;
+        height: 510px;
         margin-top: 6em;
     }
 
     #myVideo {
-        width: 100%;
+        width: 90%;
         height: 100%;
     }
 
@@ -678,16 +694,25 @@ h1 {
     .contentVideo{
         top: 140px;
     }
+
+    .imgMask_back img {    
+        max-width: 90%;
+    }
 }
 
 @media (max-width: 370px) {
     .content {
-        height: 480px;
+        height: 600px;
+        margin-top: 0px;
     }
 
 
     .contentVideo{
         top: 110px;
+    }
+
+    .imgMask_back img {    
+        max-width: 85%;
     }
 
     #video_overlays {
@@ -698,7 +723,7 @@ h1 {
     }
 
     #myVideo {
-        width: 100%;
+        width: 85%;
         height: 100%;
     }
 

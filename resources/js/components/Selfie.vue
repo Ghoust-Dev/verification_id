@@ -7,7 +7,7 @@
                 <div id="video_box">
                     <div id="video_overlays" class="imgMask">            
                         <img v-if="portrait" :src="'/assets/selfie-id-portrait.png'"   ref="mask">
-                        <img else :src="'/assets/selfie-id.png'"   ref="mask">
+                        <img v-if="!portrait" :src="'/assets/selfie-id.png'"   ref="mask">
                     </div>
                     <video id="myVideo" class="inputVideo" ref="video" playsinline=""></video>
                 </div> 
@@ -481,7 +481,7 @@ h1 {
     }
 
     #myVideo {
-        width: auto;
+        width: 90%;
         height: 100%;
     }
 
@@ -499,6 +499,10 @@ h1 {
 
     .contentBtn {
         margin-bottom: 3em;
+    }  
+    
+    .imgMask_back img {    
+        max-width: 90%;
     }
 
     h2{
@@ -519,6 +523,10 @@ h1 {
 
     .contentVideo{
         top: 110px;
+    }    
+    
+    .imgMask_back img {    
+        max-width: 85%;
     }
 
     #video_overlays {
@@ -529,7 +537,7 @@ h1 {
     }
 
     #myVideo {
-        width: auto;
+        width: 85%;
         height: 100%;
     }
 
