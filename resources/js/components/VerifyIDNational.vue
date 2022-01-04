@@ -222,7 +222,7 @@
                 var vm = this;
                 vm.video = vm.$refs.video;
                 
-                if(!vm.switchFlag){
+                if(vm.switchFlag){
                     vm.cameraSelected = vm.optionsCam[0].id
                 }else{
                     vm.cameraSelected = vm.optionsCam[1].id
